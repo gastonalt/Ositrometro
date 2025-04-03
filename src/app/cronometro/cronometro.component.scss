@@ -16,9 +16,13 @@
   border-radius: 20px;
   transition: all 0.3s ease;
   box-shadow: none;
-  min-width: 800px !important;
+  min-width: 850px !important;
   &.corriendo {
     transform: scale(1.05);
+  }
+  @media screen and (max-width: 1000px) {
+    max-width: 90%;
+    min-width: 90% !important;
   }
 }
 
@@ -28,6 +32,9 @@
 
 .tiempo {
   font-size: 15rem;
+  @media screen and (max-width: 1000px) {
+    font-size: 80px;
+  }
   font-family: "Quicksand", sans-serif;
   font-weight: 400;
   color: #fff;
@@ -63,7 +70,9 @@ mat-card-actions {
   display: flex;
   justify-content: center;
   gap: 15px;
-
+  @media screen and (max-width: 1000px) {
+    flex-direction: column;
+  }
   button {
     padding: 10px 20px;
     font-size: 1.2rem;
@@ -110,4 +119,7 @@ mat-list{
     overflow-y: auto;
     overflow-x: hidden;
     scrollbar-color: #888 #222;
+    @media screen and (max-width: 1000px) {
+      width: 100%;
+    }
 }

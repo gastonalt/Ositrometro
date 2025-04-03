@@ -137,12 +137,12 @@ export class CronometroComponent {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.http.delete('/api/historial', { body: { index } }).subscribe({
-          next: () => this.mediciones.update(h => h.filter((_, i) => i !== index)),
-          error: (err) => console.error('Error borrando:', err)
-        });
-      }
+      // if (result) {
+      //   this.http.delete('/api/historial', { body: { index } }).subscribe({
+      //     next: () => this.mediciones.update(h => h.filter((_, i) => i !== index)),
+      //     error: (err) => console.error('Error borrando:', err)
+      //   });
+      //}
     });
   }
 }
