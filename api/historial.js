@@ -6,7 +6,7 @@ const redis = new Redis({
   token: process.env['REDIS_TOKEN'] || 'TOKEN_NO_ENCONTRADO'
 });
 
-module.exports = async function handler(req: any, res: any) {
+module.exports = async function handler(req, res) {
   const { method } = req;
 
   try {
@@ -37,7 +37,7 @@ module.exports = async function handler(req: any, res: any) {
         res.setHeader('Allow', ['GET', 'POST', 'DELETE']);
         res.status(405).end(`Method ${method} Not Allowed`);
     }
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error en la API:', error);
     res.status(500).json({ error: error.message || 'Internal Server Error' });
   }
