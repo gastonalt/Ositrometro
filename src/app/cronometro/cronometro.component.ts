@@ -1,10 +1,4 @@
-import {
-  Component,
-  signal,
-  computed,
-  effect,
-  Inject,
-} from '@angular/core';
+import { Component, signal, computed, effect, Inject } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
@@ -59,6 +53,7 @@ export class CronometroComponent {
   minutoActual = signal(0);
   animacionEstado = signal('normal');
   mediciones = signal<Medicion[]>([]);
+  cargando = signal(true);
 
   tiempoFormateado = computed(() => {
     const minutos = Math.floor(this.tiempo() / 60000);
@@ -71,6 +66,9 @@ export class CronometroComponent {
 
   constructor(private dialog: MatDialog, private http: HttpClient) {
     this.cargarHistorial();
+    setTimeout(() => {
+      this.cargando.set(false);
+    }, 5000);
     effect(() => {
       const nuevoMinuto = Math.floor(this.tiempo() / 60000);
       if (nuevoMinuto !== this.minutoActual()) {
@@ -89,7 +87,10 @@ export class CronometroComponent {
 
   cargarHistorial() {
     this.http.get<Medicion[]>('/api/historial').subscribe({
-      next: (historial) => this.mediciones.set(historial),
+      next: (historial) => {
+        this.mediciones.set(historial);
+        this.cargando.set(false);
+      },
       error: (err) => console.error('Error cargando historial:', err),
     });
   }
@@ -126,8 +127,8 @@ export class CronometroComponent {
       fecha: new Date().toISOString(),
     };
     this.http.post<Medicion>('/api/historial', nuevaMedicion).subscribe({
-      next: () => this.mediciones.update(h => [...h, nuevaMedicion]),
-      error: (err: any) => console.error('Error guardando:', err)
+      next: () => this.mediciones.update((h) => [...h, nuevaMedicion]),
+      error: (err: any) => console.error('Error guardando:', err),
     });
   }
 
@@ -136,13 +137,14 @@ export class CronometroComponent {
       data: { mensaje: '¿Seguro que querés borrar esta medición?' },
     });
 
-    dialogRef.afterClosed().subscribe(result => {
-      // if (result) {
-      //   this.http.delete('/api/historial', { body: { index } }).subscribe({
-      //     next: () => this.mediciones.update(h => h.filter((_, i) => i !== index)),
-      //     error: (err) => console.error('Error borrando:', err)
-      //   });
-      //}
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.http.delete('/api/historial', { body: { index } }).subscribe({
+          next: () =>
+            this.mediciones.update((h) => h.filter((_, i) => i !== index)),
+          error: (err) => console.error('Error borrando:', err),
+        });
+      }
     });
   }
 }

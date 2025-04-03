@@ -12,7 +12,9 @@
       </div>
       @if (mediciones().length > 0) {
       <h3>Tiempos anteriores</h3>
-      }
+      } @if(cargando()) {
+      <div class="skeleton"></div>
+      }@else {
       <mat-list>
         @for (medicion of mediciones(); track medicion.id) {
         <div class="item">
@@ -30,6 +32,7 @@
         </div>
         }
       </mat-list>
+      }
     </mat-card-content>
     <mat-card-actions>
       <button mat-flat-button color="primary" (click)="iniciarPausar()">
