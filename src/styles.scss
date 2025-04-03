@@ -21,4 +21,9 @@ body {
       outlined-outline-color: rgb(0, 0, 0),
     )
   );
+  @include mat.list-overrides((
+    list-item-label-text-color: #DDD,
+    list-item-supporting-text-color: #DDD,
+    list-item-leading-icon-color: #FFF,
+  ));
 }

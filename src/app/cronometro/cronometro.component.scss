@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap");
 
 .cronometro-container {
   display: flex;
@@ -70,6 +70,44 @@ mat-card-actions {
   }
 }
 
-h3{
-    color: #fff;
+h3 {
+  color: #fff;
+}
+
+.item{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+}
+
+.item:not(:last-child){
+    border-bottom: 1px solid #444;
+}
+
+.item-title{
+    text-align: start;
+    h1{
+        margin: 0;
+        font-size: 1.5rem;
+        color: #fff;
+    }
+    p{
+        margin: 0;
+        font-size: 1rem;
+        color: #888;
+    }
+}
+
+.delete-button{
+    mat-icon{
+        color: #fff !important;
+    }
+}
+
+mat-list{
+    max-height: 200px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-color: #888 #222;
 }

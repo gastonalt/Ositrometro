@@ -70,6 +70,7 @@ export class CronometroComponent {
   });
 
   constructor(private dialog: MatDialog, private http: HttpClient) {
+    this.cargarHistorial();
     effect(() => {
       const nuevoMinuto = Math.floor(this.tiempo() / 60000);
       if (nuevoMinuto !== this.minutoActual()) {
@@ -77,6 +78,19 @@ export class CronometroComponent {
         this.animacionEstado.set('nuevo');
         setTimeout(() => this.animacionEstado.set('normal'), 500);
       }
+    });
+  }
+
+  formatearTiempoHistorial(tiempoMs: number): string {
+    const minutos = Math.floor(tiempoMs / 60000);
+    const segundos = Math.floor((tiempoMs % 60000) / 1000);
+    return `${this.pad(minutos)}:${this.pad(segundos)}`;
+  }
+
+  cargarHistorial() {
+    this.http.get<Medicion[]>('/api/historial').subscribe({
+      next: (historial) => this.mediciones.set(historial),
+      error: (err) => console.error('Error cargando historial:', err),
     });
   }
 

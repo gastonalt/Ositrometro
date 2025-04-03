@@ -9,17 +9,25 @@
         <span class="segundos">{{
           tiempoFormateado().split(":")[1].split(".")[0]
         }}</span>
-        <!-- <span class="separador">.</span>
-        <span class="milisegundos">{{ tiempoFormateado().split(".")[1] }}</span> -->
       </div>
-      <h3>Mediciones recientes</h3>
+      @if (mediciones().length > 0) {
+      <h3>Tiempos anteriores</h3>
+      }
       <mat-list>
         @for (medicion of mediciones(); track medicion.id) {
-        <mat-list-item>
-          <mat-icon matListItemIcon>medicion</mat-icon>
-          <div matListItemTitle>{{ medicion.tiempo }}</div>
-          <div matListItemLine>{{ medicion.fecha | date }}</div>
-        </mat-list-item>
+        <div class="item">
+          <div class="item-title">
+            <h1>{{ formatearTiempoHistorial(medicion.tiempo) }}</h1>
+            <p matListItemLine>{{ medicion.fecha | date }}</p>
+          </div>
+          <button
+            mat-icon-button
+            class="delete-button"
+            (click)="borrarMedicion($index)"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
         }
       </mat-list>
     </mat-card-content>
