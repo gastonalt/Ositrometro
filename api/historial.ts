@@ -1,15 +1,21 @@
+// api/historial.ts
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import { Redis } from '@upstash/redis';
 
 const redis = new Redis({
-  url: process.env['REDIS_URL'], // Estas variables vienen de Vercel
-  token: process.env['REDIS_TOKEN']
+  url: process.env['REDIS_URL'] || 'URL_NO_ENCONTRADA',
+  token: process.env['REDIS_TOKEN'] || 'TOKEN_NO_ENCONTRADO'
 });
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const { method } = req;
 
   try {
+    console.log('REDIS_URL:', process.env['REDIS_URL']);
+    console.log('REDIS_TOKEN:', process.env['REDIS_TOKEN']);
+    console.log('Método:', method);
+    console.log('Body:', req.body);
+
     switch (method) {
       case 'GET':
         const mediciones = await redis.lrange('historial', 0, -1);
@@ -34,6 +40,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
   } catch (error) {
     console.error('Error en la API:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ error: error.message || 'Internal Server Error' });
   }
 }
