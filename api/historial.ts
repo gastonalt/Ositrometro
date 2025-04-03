@@ -1,13 +1,12 @@
-// api/historial.ts
-import { VercelRequest, VercelResponse } from '@vercel/node';
-import { Redis } from '@upstash/redis';
+const { VercelRequest, VercelResponse } = require('@vercel/node');
+const { Redis } = require('@upstash/redis');
 
 const redis = new Redis({
   url: process.env['REDIS_URL'] || 'URL_NO_ENCONTRADA',
   token: process.env['REDIS_TOKEN'] || 'TOKEN_NO_ENCONTRADO'
 });
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+module.exports = async function handler(req: any, res: any) {
   const { method } = req;
 
   try {
@@ -38,8 +37,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         res.setHeader('Allow', ['GET', 'POST', 'DELETE']);
         res.status(405).end(`Method ${method} Not Allowed`);
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error en la API:', error);
     res.status(500).json({ error: error.message || 'Internal Server Error' });
   }
-}
+};
