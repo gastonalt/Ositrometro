@@ -1,0 +1,125 @@
+@import url("https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap");
+
+.cronometro-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: #000;
+  transition: background 0.5s ease;
+}
+
+.cronometro-card {
+  padding: 30px;
+  text-align: center;
+  background: #222;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+  box-shadow: none;
+  min-width: 850px !important;
+  &.corriendo {
+    transform: scale(1.05);
+  }
+  @media screen and (max-width: 1000px) {
+    max-width: 90%;
+    min-width: 90% !important;
+  }
+}
+
+.reiniciarbutton {
+  background-color: #fff;
+}
+
+.tiempo {
+  font-size: 15rem;
+  @media screen and (max-width: 1000px) {
+    font-size: 80px;
+  }
+  font-family: "Quicksand", sans-serif;
+  font-weight: 400;
+  color: #fff;
+  margin: 0 0 8px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.minutos {
+  display: inline-block;
+  width: auto;
+  text-align: right;
+}
+
+.segundos,
+.milisegundos {
+  display: inline-block;
+  text-align: left;
+}
+
+.milisegundos {
+  font-size: 0.5em;
+  margin-top: 30px;
+  color: #888;
+}
+
+.separador {
+  margin: 0 5px;
+}
+
+mat-card-actions {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  @media screen and (max-width: 1000px) {
+    flex-direction: column;
+  }
+  button {
+    padding: 10px 20px;
+    font-size: 1.2rem;
+  }
+}
+
+h3 {
+  color: #fff;
+}
+
+.item{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+}
+
+.item:not(:last-child){
+    border-bottom: 1px solid #444;
+}
+
+.item-title{
+    text-align: start;
+    h1{
+        margin: 0;
+        font-size: 1.5rem;
+        color: #fff;
+    }
+    p{
+        margin: 0;
+        font-size: 1rem;
+        color: #888;
+    }
+}
+
+.delete-button{
+    mat-icon{
+        color: #fff !important;
+    }
+}
+
+mat-list{
+    max-height: 200px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-color: #888 #222;
+    @media screen and (max-width: 1000px) {
+      width: 100%;
+    }
+}

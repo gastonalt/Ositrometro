@@ -1,10 +1,13 @@
 import { Component } from '@angular/core';
+import { CronometroComponent } from './cronometro/cronometro.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-root',
+  imports: [CronometroComponent],
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrl: './app.component.scss'
 })
 export class AppComponent {
-  title = 'ositonometro';
+  title = 'ositrometro';
 }

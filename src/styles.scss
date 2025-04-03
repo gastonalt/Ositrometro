@@ -1,1 +1,41 @@
-/* You can add global styles to this file, and also import other style files */
+@use "@angular/material" as mat;
+
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+:root {
+  @include mat.button-overrides(
+    (
+      filled-container-color: rgb(0, 0, 0),
+      filled-label-text-color: rgb(255, 255, 255),
+      outlined-label-text-color: rgb(0, 0, 0),
+      outlined-ripple-color: rgba(0, 0, 0, 0.12),
+      outlined-hover-state-layer-opacity: 0,
+      outlined-pressed-state-layer-opacity: 0,
+      outlined-outline-color: rgb(0, 0, 0),
+      text-label-text-color: #EEE,
+      text-ripple-color: rgba(255, 255, 255, 0.12),
+      filled-disabled-container-color: rgb(55,55,55, 0.5),
+      text-state-layer-color: rgb(66, 66, 66),
+      text-hover-state-layer-opacity: 0,
+      text-pressed-state-layer-opacity: 0,
+      text-focus-state-layer-opacity: 0,
+    )
+  );
+  @include mat.list-overrides((
+    list-item-label-text-color: #DDD,
+    list-item-supporting-text-color: #DDD,
+    list-item-leading-icon-color: #FFF,
+  ));
+  @include mat.dialog-overrides((
+    container-color: #000,
+    subhead-color: #FFF,
+    supporting-text-color: #DDD,
+  ));
+}
