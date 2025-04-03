@@ -1,0 +1,75 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap');
+
+.cronometro-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: #000;
+  transition: background 0.5s ease;
+}
+
+.cronometro-card {
+  padding: 30px;
+  text-align: center;
+  background: #222;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+  box-shadow: none;
+  min-width: 800px !important;
+  &.corriendo {
+    transform: scale(1.05);
+  }
+}
+
+.reiniciarbutton {
+  background-color: #fff;
+}
+
+.tiempo {
+  font-size: 15rem;
+  font-family: "Quicksand", sans-serif;
+  font-weight: 400;
+  color: #fff;
+  margin: 0 0 8px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.minutos {
+  display: inline-block;
+  width: auto;
+  text-align: right;
+}
+
+.segundos,
+.milisegundos {
+  display: inline-block;
+  text-align: left;
+}
+
+.milisegundos {
+  font-size: 0.5em;
+  margin-top: 30px;
+  color: #888;
+}
+
+.separador {
+  margin: 0 5px;
+}
+
+mat-card-actions {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+
+  button {
+    padding: 10px 20px;
+    font-size: 1.2rem;
+  }
+}
+
+h3{
+    color: #fff;
+}

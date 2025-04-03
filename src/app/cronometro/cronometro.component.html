@@ -1,0 +1,51 @@
+<div class="cronometro-container">
+  <mat-card class="cronometro-card" [ngClass]="{ corriendo: corriendo() }">
+    <mat-card-content>
+      <div class="tiempo">
+        <span [@minutoAnimado]="animacionEstado()" class="minutos">{{
+          tiempoFormateado().split(":")[0]
+        }}</span>
+        <span class="separador">:</span>
+        <span class="segundos">{{
+          tiempoFormateado().split(":")[1].split(".")[0]
+        }}</span>
+        <!-- <span class="separador">.</span>
+        <span class="milisegundos">{{ tiempoFormateado().split(".")[1] }}</span> -->
+      </div>
+      <h3>Mediciones recientes</h3>
+      <mat-list>
+        @for (medicion of mediciones(); track medicion.id) {
+        <mat-list-item>
+          <mat-icon matListItemIcon>medicion</mat-icon>
+          <div matListItemTitle>{{ medicion.tiempo }}</div>
+          <div matListItemLine>{{ medicion.fecha | date }}</div>
+        </mat-list-item>
+        }
+      </mat-list>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-flat-button color="primary" (click)="iniciarPausar()">
+        {{ corriendo() ? "Pausar" : "Iniciar" }}
+        <mat-icon>{{ corriendo() ? "pause" : "play_arrow" }}</mat-icon>
+      </button>
+      <button
+        mat-stroked-button
+        class="reiniciarbutton"
+        color="accent"
+        (click)="reiniciar()"
+      >
+        Reiniciar
+        <mat-icon>replay</mat-icon>
+      </button>
+      <button
+        mat-flat-button
+        color="primary"
+        (click)="guardar()"
+        [disabled]="tiempo() === 0 || corriendo()"
+      >
+        Guardar
+        <mat-icon>save</mat-icon>
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>
