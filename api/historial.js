@@ -1,16 +1,16 @@
 const { Redis } = require('@upstash/redis');
 
 const redis = new Redis({
-  url: process.env['REDIS_URL'] || 'URL_NO_ENCONTRADA',
-  token: process.env['REDIS_TOKEN'] || 'TOKEN_NO_ENCONTRADO'
+  url: process.env['KV_REST_API_URL'] || 'URL_NO_ENCONTRADA',
+  token: process.env['KV_REST_API_TOKEN'] || 'TOKEN_NO_ENCONTRADO'
 });
 
 module.exports = async function handler(req, res) {
   const { method } = req;
 
   try {
-    console.log('REDIS_URL:', process.env['REDIS_URL']);
-    console.log('REDIS_TOKEN:', process.env['REDIS_TOKEN']);
+    console.log('KV_REST_API_URL:', process.env['KV_REST_API_URL']);
+    console.log('KV_REST_API_TOKEN:', process.env['KV_REST_API_TOKEN']);
     console.log('Método:', method);
     console.log('Body:', req.body);
 
