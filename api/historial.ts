@@ -2,8 +2,8 @@ import { VercelRequest, VercelResponse } from '@vercel/node';
 import { Redis } from '@upstash/redis';
 
 const redis = new Redis({
-  url: process.env.REDIS_URL!, // Estas variables vienen de Vercel
-  token: process.env.REDIS_TOKEN!
+  url: process.env['REDIS_URL'], // Estas variables vienen de Vercel
+  token: process.env['REDIS_TOKEN']
 });
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
