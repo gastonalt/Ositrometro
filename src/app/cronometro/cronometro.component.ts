@@ -3,7 +3,6 @@ import {
   signal,
   computed,
   effect,
-  inject,
   Inject,
 } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
