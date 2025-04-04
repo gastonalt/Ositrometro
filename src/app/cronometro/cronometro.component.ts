@@ -1,23 +1,12 @@
-import { Component, signal, computed, effect, Inject } from '@angular/core';
+import { Component, signal, computed, effect, Inject, OnInit, OnDestroy } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
-import {
-  trigger,
-  state,
-  style,
-  transition,
-  animate,
-} from '@angular/animations';
+import { trigger, state, style, transition, animate } from '@angular/animations';
 import { MatIconModule } from '@angular/material/icon';
 import { Medicion } from '../model/Medicion';
 import { MatListModule } from '@angular/material/list';
-import {
-  MAT_DIALOG_DATA,
-  MatDialog,
-  MatDialogModule,
-  MatDialogRef,
-} from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { HttpClient } from '@angular/common/http';
 
 @Component({
@@ -46,7 +35,7 @@ import { HttpClient } from '@angular/common/http';
     ]),
   ],
 })
-export class CronometroComponent {
+export class CronometroComponent implements OnInit, OnDestroy {
   tiempo = signal(0);
   corriendo = signal(false);
   intervalo: any;
@@ -54,14 +43,14 @@ export class CronometroComponent {
   animacionEstado = signal('normal');
   mediciones = signal<Medicion[]>([]);
   cargando = signal(true);
+  // Cambio: Añadida propiedad para almacenar el tiempo de inicio y calcular el tiempo real
+  private tiempoInicio: number | null = null;
 
   tiempoFormateado = computed(() => {
     const minutos = Math.floor(this.tiempo() / 60000);
     const segundos = Math.floor((this.tiempo() % 60000) / 1000);
     const milisegundos = Math.floor((this.tiempo() % 1000) / 10);
-    return `${this.pad(minutos)}:${this.pad(segundos)}.${this.pad(
-      milisegundos
-    )}`;
+    return `${this.pad(minutos)}:${this.pad(segundos)}.${this.pad(milisegundos)}`;
   });
 
   constructor(private dialog: MatDialog, private http: HttpClient) {
@@ -77,6 +66,20 @@ export class CronometroComponent {
         setTimeout(() => this.animacionEstado.set('normal'), 500);
       }
     });
+  }
+
+  ngOnInit() {
+    document.addEventListener('visibilitychange', this.onVisibilityChange);
+  }
+
+  // Cambio: Ajustado para mantener el tiempo correcto al volver a la pestaña
+  onVisibilityChange = () => {
+    if (document.visibilityState === 'visible' && this.corriendo()) {
+      if (this.tiempoInicio !== null) {
+        this.tiempo.set(Date.now() - this.tiempoInicio); // Actualiza el tiempo basado en el tiempo real
+        this.actualizarTiempo(); // Reanuda la animación
+      }
+    }
   }
 
   formatearTiempoHistorial(tiempoMs: number): string {
@@ -95,21 +98,40 @@ export class CronometroComponent {
     });
   }
 
-  iniciarPausar() {
+  // Cambio: Modificado para usar Date.now() y calcular el tiempo real
+  actualizarTiempo() {
     if (this.corriendo()) {
-      clearInterval(this.intervalo);
-    } else {
-      this.intervalo = setInterval(() => {
-        this.tiempo.update((t) => t + 10);
-      }, 10);
+      if (this.tiempoInicio === null) {
+        this.tiempoInicio = Date.now(); // Establece el tiempo de inicio si no existe
+      }
+      const ahora = Date.now();
+      this.tiempo.set(ahora - this.tiempoInicio); // Calcula el tiempo transcurrido
+      requestAnimationFrame(() => this.actualizarTiempo());
     }
-    this.corriendo.set(!this.corriendo());
   }
 
+  // Cambio: Ajustado para manejar el tiempo de inicio y continuar correctamente
+  iniciarPausar() {
+    if (this.corriendo()) {
+      this.corriendo.set(false); // Pausa el cronómetro
+      this.tiempo.set(Date.now() - this.tiempoInicio!); // Guarda el tiempo acumulado
+      this.tiempoInicio = null; // Resetea el inicio
+    } else {
+      if (this.tiempo() === 0) {
+        this.tiempoInicio = Date.now(); // Nuevo inicio desde cero
+      } else {
+        this.tiempoInicio = Date.now() - this.tiempo(); // Continúa desde donde quedó
+      }
+      this.corriendo.set(true); // Inicia el cronómetro
+      this.actualizarTiempo();
+    }
+  }
+
+  // Cambio: Aseguramos que tiempoInicio se reinicie al reiniciar
   reiniciar() {
-    clearInterval(this.intervalo);
-    this.tiempo.set(0);
     this.corriendo.set(false);
+    this.tiempo.set(0);
+    this.tiempoInicio = null; // Resetea el tiempo de inicio
     this.minutoActual.set(0);
   }
 
@@ -118,7 +140,7 @@ export class CronometroComponent {
   }
 
   ngOnDestroy() {
-    clearInterval(this.intervalo);
+    document.removeEventListener('visibilitychange', this.onVisibilityChange);
   }
 
   guardar() {
@@ -140,8 +162,7 @@ export class CronometroComponent {
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         this.http.delete('/api/historial', { body: { index } }).subscribe({
-          next: () =>
-            this.mediciones.update((h) => h.filter((_, i) => i !== index)),
+          next: () => this.mediciones.update((h) => h.filter((_, i) => i !== index)),
           error: (err) => console.error('Error borrando:', err),
         });
       }
