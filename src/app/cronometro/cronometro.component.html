@@ -2,12 +2,14 @@
   <mat-card class="cronometro-card" [ngClass]="{ corriendo: corriendo() }">
     <mat-card-content>
       <div class="tiempo">
-        <span [@minutoAnimado]="animacionEstado()" class="minutos">{{
+        <span [@minutoAnimado]="animacionEstado()" class="horas">{{
           tiempoFormateado().split(":")[0]
         }}</span>
         <span class="separador">:</span>
+        <span class="minutos">{{ tiempoFormateado().split(":")[1] }}</span>
+        <span class="separador">:</span>
         <span class="segundos">{{
-          tiempoFormateado().split(":")[1].split(".")[0]
+          tiempoFormateado().split(":")[2].split(".")[0]
         }}</span>
       </div>
       @if (mediciones().length > 0) {

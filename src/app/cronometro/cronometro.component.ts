@@ -56,10 +56,11 @@ export class CronometroComponent {
   cargando = signal(true);
 
   tiempoFormateado = computed(() => {
-    const minutos = Math.floor(this.tiempo() / 60000);
+    const horas = Math.floor(this.tiempo() / 3600000);
+    const minutos = Math.floor((this.tiempo() % 3600000) / 60000);
     const segundos = Math.floor((this.tiempo() % 60000) / 1000);
     const milisegundos = Math.floor((this.tiempo() % 1000) / 10);
-    return `${this.pad(minutos)}:${this.pad(segundos)}.${this.pad(
+    return `${this.pad(horas)}:${this.pad(minutos)}:${this.pad(segundos)}.${this.pad(
       milisegundos
     )}`;
   });
@@ -80,9 +81,10 @@ export class CronometroComponent {
   }
 
   formatearTiempoHistorial(tiempoMs: number): string {
-    const minutos = Math.floor(tiempoMs / 60000);
+    const horas = Math.floor(tiempoMs / 3600000);
+    const minutos = Math.floor((tiempoMs % 3600000) / 60000);
     const segundos = Math.floor((tiempoMs % 60000) / 1000);
-    return `${this.pad(minutos)}:${this.pad(segundos)}`;
+    return `${this.pad(horas)}:${this.pad(minutos)}:${this.pad(segundos)}`;
   }
 
   cargarHistorial() {
