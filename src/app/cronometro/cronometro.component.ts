@@ -74,13 +74,21 @@ export class CronometroComponent implements OnInit, OnDestroy {
 
   // Cambio: Ajustado para mantener el tiempo correcto al volver a la pestaña
   onVisibilityChange = () => {
-    if (document.visibilityState === 'visible' && this.corriendo()) {
-      if (this.tiempoInicio !== null) {
-        this.tiempo.set(Date.now() - this.tiempoInicio); // Actualiza el tiempo basado en el tiempo real
-        this.actualizarTiempo(); // Reanuda la animación
+    if (document.visibilityState === 'visible') {
+      // Al volver a la pestaña
+      if (this.corriendo() && this.tiempoInicio !== null) {
+        // Calcula el tiempo transcurrido desde el inicio hasta ahora
+        const tiempoTranscurrido = Date.now() - this.tiempoInicio;
+        this.tiempo.set(tiempoTranscurrido);
+        this.actualizarTiempo(); // Reanuda la actualización
+      }
+    } else {
+      // Al salir de la pestaña
+      if (this.corriendo()) {
+        // No necesitas hacer nada especial aquí, solo mantener el tiempoInicio
       }
     }
-  }
+  };
 
   formatearTiempoHistorial(tiempoMs: number): string {
     const minutos = Math.floor(tiempoMs / 60000);
@@ -98,36 +106,34 @@ export class CronometroComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Cambio: Modificado para usar Date.now() y calcular el tiempo real
   actualizarTiempo() {
     if (this.corriendo()) {
       if (this.tiempoInicio === null) {
-        this.tiempoInicio = Date.now(); // Establece el tiempo de inicio si no existe
+        this.tiempoInicio = Date.now(); // Si no hay tiempo de inicio, establecerlo
       }
       const ahora = Date.now();
-      this.tiempo.set(ahora - this.tiempoInicio); // Calcula el tiempo transcurrido
-      requestAnimationFrame(() => this.actualizarTiempo());
+      this.tiempo.set(ahora - this.tiempoInicio); // Actualiza el tiempo
+      requestAnimationFrame(() => this.actualizarTiempo()); // Sigue actualizando
     }
   }
 
-  // Cambio: Ajustado para manejar el tiempo de inicio y continuar correctamente
+  // Iniciar o pausar el cronómetro
   iniciarPausar() {
     if (this.corriendo()) {
-      this.corriendo.set(false); // Pausa el cronómetro
-      this.tiempo.set(Date.now() - this.tiempoInicio!); // Guarda el tiempo acumulado
-      this.tiempoInicio = null; // Resetea el inicio
+      this.corriendo.set(false); // Pausa
+      this.tiempo.set(Date.now() - this.tiempoInicio!); // Guarda el tiempo actual
+      this.tiempoInicio = null; // Resetea el tiempo de inicio
     } else {
       if (this.tiempo() === 0) {
         this.tiempoInicio = Date.now(); // Nuevo inicio desde cero
       } else {
-        this.tiempoInicio = Date.now() - this.tiempo(); // Continúa desde donde quedó
+        this.tiempoInicio = Date.now() - this.tiempo(); // Continúa desde el tiempo acumulado
       }
-      this.corriendo.set(true); // Inicia el cronómetro
+      this.corriendo.set(true); // Inicia
       this.actualizarTiempo();
     }
   }
 
-  // Cambio: Aseguramos que tiempoInicio se reinicie al reiniciar
   reiniciar() {
     this.corriendo.set(false);
     this.tiempo.set(0);
@@ -135,12 +141,12 @@ export class CronometroComponent implements OnInit, OnDestroy {
     this.minutoActual.set(0);
   }
 
-  pad(numero: number): string {
-    return numero < 10 ? `0${numero}` : numero.toString();
-  }
-
   ngOnDestroy() {
     document.removeEventListener('visibilitychange', this.onVisibilityChange);
+  }
+
+  pad(numero: number): string {
+    return numero < 10 ? `0${numero}` : numero.toString();
   }
 
   guardar() {
