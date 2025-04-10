@@ -54,6 +54,7 @@ export class CronometroComponent {
   animacionEstado = signal('normal');
   mediciones = signal<Medicion[]>([]);
   cargando = signal(true);
+  private tiempoInicio: number | null = null; // Tiempo de inicio en milisegundos
 
   tiempoFormateado = computed(() => {
     const horas = Math.floor(this.tiempo() / 3600000);
@@ -80,6 +81,64 @@ export class CronometroComponent {
     });
   }
 
+  ngOnInit() {
+    document.addEventListener('visibilitychange', this.onVisibilityChange);
+  }
+
+  // Manejo del cambio de visibilidad
+  onVisibilityChange = () => {
+    if (document.visibilityState === 'visible') {
+      if (this.corriendo() && this.tiempoInicio !== null) {
+        // Recalcula el tiempo transcurrido al volver a la pestaña
+        const tiempoTranscurrido = Date.now() - this.tiempoInicio;
+        this.tiempo.set(tiempoTranscurrido);
+        this.iniciarActualizacion(); // Reanuda la actualización
+      }
+    } else {
+      // Al salir de la pestaña, pausa la actualización pero conserva tiempoInicio
+      if (this.corriendo()) {
+        clearInterval(this.intervalo);
+      }
+    }
+  };
+
+  // Método para iniciar la actualización del tiempo
+  private iniciarActualizacion() {
+    this.intervalo = setInterval(() => {
+      if (this.tiempoInicio !== null) {
+        this.tiempo.set(Date.now() - this.tiempoInicio);
+      }
+    }, 10);
+  }
+
+  // Iniciar o pausar el cronómetro
+  iniciarPausar() {
+    if (this.corriendo()) {
+      clearInterval(this.intervalo);
+      this.tiempo.set(Date.now() - this.tiempoInicio!); // Guarda el tiempo acumulado
+      this.tiempoInicio = null; // Resetea el tiempo de inicio
+      this.corriendo.set(false);
+    } else {
+      if (this.tiempo() === 0) {
+        this.tiempoInicio = Date.now(); // Nuevo inicio desde cero
+      } else {
+        this.tiempoInicio = Date.now() - this.tiempo(); // Continúa desde el tiempo acumulado
+      }
+      this.corriendo.set(true);
+      this.iniciarActualizacion(); // Comienza la actualización
+    }
+  }
+
+  // Reiniciar el cronómetro
+  reiniciar() {
+    clearInterval(this.intervalo);
+    this.tiempo.set(0);
+    this.corriendo.set(false);
+    this.tiempoInicio = null; // Resetea el tiempo de inicio
+    this.minutoActual.set(0);
+  }
+
+  // Formatear tiempo para historial
   formatearTiempoHistorial(tiempoMs: number): string {
     const horas = Math.floor(tiempoMs / 3600000);
     const minutos = Math.floor((tiempoMs % 3600000) / 60000);
@@ -87,6 +146,7 @@ export class CronometroComponent {
     return `${this.pad(horas)}:${this.pad(minutos)}:${this.pad(segundos)}`;
   }
 
+  // Cargar historial desde la API
   cargarHistorial() {
     this.http.get<Medicion[]>('/api/historial').subscribe({
       next: (historial) => {
@@ -97,32 +157,18 @@ export class CronometroComponent {
     });
   }
 
-  iniciarPausar() {
-    if (this.corriendo()) {
-      clearInterval(this.intervalo);
-    } else {
-      this.intervalo = setInterval(() => {
-        this.tiempo.update((t) => t + 10);
-      }, 10);
-    }
-    this.corriendo.set(!this.corriendo());
-  }
-
-  reiniciar() {
-    clearInterval(this.intervalo);
-    this.tiempo.set(0);
-    this.corriendo.set(false);
-    this.minutoActual.set(0);
-  }
-
+  // Formatear números con ceros a la izquierda
   pad(numero: number): string {
     return numero < 10 ? `0${numero}` : numero.toString();
   }
 
+  // Limpiar al destruir el componente
   ngOnDestroy() {
     clearInterval(this.intervalo);
+    document.removeEventListener('visibilitychange', this.onVisibilityChange);
   }
 
+  // Guardar una nueva medición
   guardar() {
     const nuevaMedicion: Medicion = {
       tiempo: this.tiempo(),
@@ -134,6 +180,7 @@ export class CronometroComponent {
     });
   }
 
+  // Borrar una medición
   borrarMedicion(index: number) {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: { mensaje: '¿Seguro que querés borrar esta medición?' },
